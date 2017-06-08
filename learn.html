@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Liblb - A suite of load balancing policies</title>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <link rel="stylesheet" href="css/app.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-liblb navbar-fixed-top">
+    		<div class="container">
+    			<div class="navbar-header">
+    				<button aria-expanded="false" class="collapsed navbar-toggle" data-target="#bs-example-navbar-collapse-7" data-toggle="collapse" type="button">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <div class="brand">
+                        <h3 class="title">liblb</h3>
+                        <span class="circle circle-first"></span>
+                        <span class="circle circle-chosen"></span>
+                        <span class="circle"></span>
+                    </div>
+
+    			</div>
+    			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-7">
+    				<ul class="nav navbar-nav">
+    					<li>
+    						<a href="#">Home</a>
+    					</li>
+    					<li class="active">
+    						<a href="#">Learn</a>
+    					</li>
+                        <li>
+    						<a href="https://godoc.org/github.com/lafikl/liblb">Go Library</a>
+    					</li>
+    				</ul>
+    				<ul class="nav navbar-nav pull-right">
+                        <li class="gh-btn">
+                            <a class="github-button" href="https://github.com/lafikl/liblb" aria-label="Star lafikl/liblb on GitHub">Star</a>
+                        </li>
+    				</ul>
+    			</div>
+
+    		</div>
+    	</nav>
+
+        <div class="container-full">
+          <div class="header clearfix header-slim">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 ">
+                        <div class="tagline">
+                            <h1 class="text-center tagline-head">An Empirical Study Of Load Balancing Algorithms</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <ul class="nav nav-pills nav-stacked sidebar-menu">
+                      <li class="active">
+                          <a href="/learn.html">Overview</a>
+                      </li>
+                      <li>
+                          <a href="/r2.html">Round Robin</a>
+                      </li>
+                      <li>
+                          <a href="/p2c.html">Two Random Choices</a>
+                      </li>
+                      <li>
+                          <a href="/pp2c.html">Partial Key Grouping</a>
+                      </li>
+                      <li>
+                          <a href="/consistent.html">Consistent Hashing</a>
+                      </li>
+                      <li>
+                          <a href="/bounded.html">Bounded Consistent Hashing</a>
+                      </li>
+                    </ul>
+                </div>
+                <div class="col-md-8">
+                    <div class="body">
+                        <h1>Why and What is liblb?</h1>
+                        <p>
+                            It all started when a friend of mine complained about
+                            how the load balancing algorithm he was using for a system, wasn't delivering the outcomes he was looking for.<br>
+                            His use case was somewhat a unique one, so i got very interested in solving that issue.<br>
+                            Not long after, I found myself researching on all the load balancing algorithms i could find in the literature.<br>
+                            After a while, I decided to build a <a href="#simulation">simulation</a>, to better evaluate the algorithms I chose based on:
+                            <ul>
+                                <li>Simplicity of the algorithm</li>
+                                <li>Load Distribtuion</li>
+                                <li>Affinty/Cache Friendliness</li>
+                                <li>The Guarantees Provided</li>
+                            </ul>
+                            Each algorithm serves a particular use case on a different side of the spectrum.<br>
+                            Which should cater for most of the different applications needs, ranging from CDNs, to CRUD applications who keep their state in a centralized database.
+
+                        </p>
+                    </div>
+                    <div class="body">
+                        <h1 id="simulation">Simulation</h1>
+                        <p>
+                            The simulation is derived from logs of a day worth of real traffic - anonymized of course - donated from a <a href="https://haraj.com">major eCommerce site in the Middle East</a>.<br>
+                            Which in my opinion makes the study more meaningful than a randomly generated traffic.<br><br>
+
+                            The simulation works as follows:
+                            <ol>
+                                <li><b>Client</b>: extracts the user's IP from the logs</li>
+                                <li><b>Client</b>: sends the IP to the GeoServer host the <i><b>liblb</b></i> gave it (for <a href="https://godoc.org/github.com/lafikl/liblb/r2#ex-package">example</a>), based on the algorithm chosen.</li>
+                                <li><b>GeoServer Host</b>: Looks in its in-memory cache, if found it returns the results from cache, while incrementing the cache hit counter.</li>
+                                <li><b>GeoServer Host</b>: Otherwise, it returns the results from its database, while adding it in the cache, then it increments the cache miss counter.</li>
+                            </ol>
+                        </p>
+                        <div class="text-center">
+                            <div class="thumbnail">
+                              <img src="img/liblbarch.png" alt="liblb simulation architecture">
+                              <div class="caption">
+                                <h6>Simulation Architecture</h6>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="body">
+                        <h1 id="graphs">Graphs Explanation</h1>
+
+                        <p>
+                            <ul>
+                                <li><b>Request Per Server Per Second</b>: Number of requests processed per GeoServer per second.</li>
+                                <li><b>Load Per Server</b>: Load is the percentage of requests sent to every GeoServer in total.</li>
+                                <li><b>Total Hits/Misses</b>: Total number of GeoServer cache hits and misses.</li>
+                                <li><b>Average Hits/Misses Per Second</b>: Average percentage of the cluster cache hits and misses per second.</li>
+                                <li><b>Total Requests</b>: Total number of sent requests to all GeoServers.</li>
+                                <li><b>Requests Per Server</b>: Average of total sent requests to a single GeoServer.</li>
+                                <li><b>Hits %</b>: Average percentage of the cluster cache hits per second.</li>
+                                <li><b>Misses %</b>: Average percentage of the cluster cache misses per second.</li>
+                            </ul>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <footer id="footer">
+                        <p class="text-center">Created With <3 By <a target="_blank" href="https://twitter.com/lafikl">Khalid Lafi</a> - 2017</p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script async defer src="https://buttons.github.io/buttons.js"></script>
+    </body>
+</html>

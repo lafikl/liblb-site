@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Liblb - A suite of load balancing policies</title>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <link rel="stylesheet" href="css/app.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-liblb navbar-fixed-top">
+    		<div class="container">
+    			<div class="navbar-header">
+    				<button aria-expanded="false" class="collapsed navbar-toggle" data-target="#bs-example-navbar-collapse-7" data-toggle="collapse" type="button">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <div class="brand">
+                        <h3 class="title">liblb</h3>
+                        <span class="circle circle-first"></span>
+                        <span class="circle circle-chosen"></span>
+                        <span class="circle"></span>
+                    </div>
+
+    			</div>
+    			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-7">
+    				<ul class="nav navbar-nav">
+    					<li>
+    						<a href="#">Home</a>
+    					</li>
+    					<li class="active">
+    						<a href="#">Learn</a>
+    					</li>
+                        <li>
+    						<a href="https://godoc.org/github.com/lafikl/liblb">Go Library</a>
+    					</li>
+    				</ul>
+    				<ul class="nav navbar-nav pull-right">
+                        <li class="gh-btn">
+                            <a class="github-button" href="https://github.com/lafikl/liblb" aria-label="Star lafikl/liblb on GitHub">Star</a>
+                        </li>
+    				</ul>
+    			</div>
+
+    		</div>
+    	</nav>
+
+        <div class="container-full">
+          <div class="header clearfix header-slim">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 ">
+                        <div class="tagline">
+                            <h1 class="text-center tagline-head">An Empirical Study Of Load Balancing Algorithms</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <ul class="nav nav-pills nav-stacked sidebar-menu">
+                        <li>
+                            <a href="/learn.html">Overview</a>
+                        </li>
+                        <li class="active">
+                            <a href="/r2.html">Round Robin</a>
+                        </li>
+                        <li>
+                            <a href="/p2c.html">Two Random Choices</a>
+                        </li>
+                        <li>
+                            <a href="/pp2c.html">Partial Key Grouping</a>
+                        </li>
+                        <li>
+                            <a href="/consistent.html">Consistent Hashing</a>
+                        </li>
+                        <li>
+                            <a href="/bounded.html">Bounded Consistent Hashing</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-8">
+                    <div class="body">
+                        <h1>What is Round Robin?</h1>
+                        <p>
+                            It's one of the simplest if not the simplest load balancing algorithm.
+                            It distribute requests by walking the list of servers and assigning a request to each server in turn.<br>
+                            On the downside Round-Robin assumes that all servers are alike,
+                            and that all requests take the same amount of time, which is obviously not true in practice.
+
+                        </p>
+                    </div>
+
+                    <div class="body">
+                        <h1 id="experiment">Experiment Results</h1>
+                        <div class="text-center">
+                            <div class="thumbnail">
+                                <a href="img/r2/1.png" target="_blank">
+                                    <img src="img/r2/1.png" alt="liblb simulation architecture">
+                                </a>
+                                <a href="img/r2/2.png" target="_blank">
+                                    <img src="img/r2/2.png" alt="liblb simulation architecture">
+                                </a>
+                                <a href="img/r2/3.png" target="_blank">
+                                    <img src="img/r2/3.png" alt="liblb simulation architecture">
+                                </a>
+                              <div class="caption">
+                                <h6>Round Robin's Experiment Results</h6>
+                                <h6><a href="learn.html#graphs">For info on the graphs</a></h6>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="body">
+                        <h1 id="proscons">The Good, the Bad, and the Ugly</h1>
+                        <p>
+                            <h4>Pros:</h4>
+                            <ul>
+                                <li>Perfect load distribution, if all requests take the same time to be served</li>
+                                <li>Very easy to implement</li>
+                                <li>A good starting point when you don't know which algorithm to choose</li>
+                            </ul>
+                            <h4>Cons:</h4>
+                            <ul>
+                                <li>Becuase of it's perfect load distribution - in theory -, it's not suitable for systems that utilizes caches to avoid doing heavy computations over and over.</li>
+                                <li>It assumes that all requests take the same time, and that the servers are homogeneous, which is usually incorrect in practice.</li>
+                            </ul>
+                        </p>
+
+                    </div>
+
+
+                    <div class="body">
+                        <h1 id="proscons">liblb R2 Balancer API docs</h1>
+                        <a class="btn btn-prim" href="https://godoc.org/github.com/lafikl/liblb/r2">GoDoc liblb/r2</a>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <footer id="footer">
+                        <p class="text-center">Created With <3 By <a target="_blank" href="https://github.com/lafikl">Khalid Lafi</a> - 2017</p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script async defer src="https://buttons.github.io/buttons.js"></script>
+    </body>
+</html>
