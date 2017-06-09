@@ -89,15 +89,45 @@
                     </ul>
                 </div>
                 <div class="col-md-8">
+
                     <div class="body">
-                        <h1>What is Round Robin?</h1>
+                        <div class="list-group">
+                          <a href="#" class="list-group-item disabled">
+                            Table Of Content
+                          </a>
+                          <a href="#explaination" class="list-group-item">What?</a>
+                          <a href="#experiment" class="list-group-item">Experiment Results</a>
+                          <a href="#strengths" class="list-group-item">Strengths</a>
+                          <a href="#weaknesses" class="list-group-item">Wekanesses</a>
+                          <a href="#usecases" class="list-group-item">Use Cases</a>
+                        </div>
+                    </div>
+
+                    <div class="body">
+                        <h1 id="explaination">What is Round Robin?</h1>
                         <p>
                             It's one of the simplest if not the simplest load balancing algorithm.
                             It distribute requests by walking the list of servers and assigning a request to each server in turn.<br>
-                            On the downside Round-Robin assumes that all servers are alike,
-                            and that all requests take the same amount of time, which is obviously not true in practice.
+                            On the downside it assumes that all requests take the same amount of time, which is obviously not true in practice.
 
                         </p>
+                    </div>
+                    <div class="body">
+                        <h1 id="example">Client Example</h1>
+                        <p>An example of the code used by the client to assign requests to servers, using <a href="https://godoc.org/github.com/lafikl/liblb/r2"><code>liblb/r2</code> Go package</a>, which implements Round Robin.</p>
+                        <pre>
+// define a round-robin load balancer
+lb := r2.New("127.0.0.1:8009", "127.0.0.1:8008", "127.0.0.1:8007")
+
+for i := 0; i < 10; i++ {
+    // picks one of the hosts, sequentially
+    host, err := lb.Balance()
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("Send request #%d to host %s\n", i, host)
+}
+</pre>
                     </div>
 
                     <div class="body">
@@ -122,23 +152,30 @@
                     </div>
 
                     <div class="body">
-                        <h1 id="proscons">The Good, the Bad, and the Ugly</h1>
-                        <p>
-                            <h4>Pros:</h4>
-                            <ul>
-                                <li>Perfect load distribution, if all requests take the same time to be served</li>
-                                <li>Very easy to implement</li>
-                                <li>A good starting point when you don't know which algorithm to choose</li>
-                            </ul>
-                            <h4>Cons:</h4>
-                            <ul>
-                                <li>Becuase of it's perfect load distribution - in theory -, it's not suitable for systems that utilizes caches to avoid doing heavy computations over and over.</li>
-                                <li>It assumes that all requests take the same time, and that the servers are homogeneous, which is usually incorrect in practice.</li>
-                            </ul>
-                        </p>
-
+                        <h1 id="strengths">Strengths</h1>
+                        <ul>
+                            <li>Uniform load distribtuion.</li>
+                            <li>Good choice when you're not sure about your load balancing requirements.</li>
+                            <li>Easy to reason about. It also simplifies the capacity planning in theory, when you don't have enough real data on what is your load yet.</li>
+                            <li>Exists in most load balancers.</li>
+                        </ul>
                     </div>
 
+                    <div class="body">
+                        <h1 id="weaknesses">Weaknesses</h1>
+                        <ul>
+                            <li>Oblivious to the actual load of the servers it's assigning requests to, because it assumes that requests take the same time.</li>
+                            <li>It has no way of assigning certain requests to certain servers (affinity), which makes it not suitable for systems that utilizes caches to avoid doing heavy computations over and over.</li>
+                        </ul>
+                    </div>
+
+                    <div class="body">
+                        <h1 id="usecases">Use Cases</h1>
+                        <ul>
+                            <li>Three Tier Applications, most websites basically.</li>
+                            <li>Stateless Applications, for example an uptime service that checks if a certain server up or not by sending a request now (<a href="isup.me">isup.me</a>)</li>
+                        </ul>
+                    </div>
 
                     <div class="body">
                         <h1 id="proscons">liblb R2 Balancer API docs</h1>

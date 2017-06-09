@@ -88,15 +88,64 @@
                     </ul>
                 </div>
                 <div class="col-md-8">
-                    <div class="body">
-                        <h1>What is The Power Of Two Random Choices?</h1>
-                        <p>
-                            It's one of the simplest if not the simplest load balancing algorithm.
-                            It distribute requests by walking the list of servers and assigning a request to each server in turn.<br>
-                            On the downside Round-Robin assumes that all servers are alike,
-                            and that all requests take the same amount of time, which is obviously not true in practice.
 
+                    <div class="body">
+                        <div class="list-group">
+                          <a href="#" class="list-group-item disabled">
+                            Table Of Content
+                          </a>
+                          <a href="#explaination" class="list-group-item">What?</a>
+                          <a href="#experiment" class="list-group-item">Experiment Results</a>
+                          <a href="#strengths" class="list-group-item">Strengths</a>
+                          <a href="#weaknesses" class="list-group-item">Wekanesses</a>
+                          <a href="#usecases" class="list-group-item">Use Cases</a>
+                          <a href="#readings" class="list-group-item">Further Readings</a>
+                        </div>
+                    </div>
+
+                    <div class="body">
+                        <h1 id="explaination">What is The Power Of Two Random Choices?</h1>
+                        <p>
+                            In centerlalized load balancers world,
+                            implementing a least loaded policy is very simple. Because it has a complete view of the cluster,
+                            since all the traffic goes through it.<br>
+                            It can do it by keeping counters of open connections for every host, and route traffic to the least loaded one.<br>
+                            But once your systems outgrows that load balancer, this could never work as is.<br><br>
+
+                            First, we need a way to periodically propagate the load information of the hosts to all the load balancers.<br>
+                            Once we do so, the load of the servers will look like a roller coaster, moving up and down.<br>
+                            It's because that the load information distrubted will always be stale.<br>
+                            Which means that the load balancers, are going to route more traffic than it should to the least loaded server.<br>
+                            This will happen again, when it gets the new load information with the newest least loaded host.<br>
+                            While the previously least loaded host becomes idle, developing a <a href="https://en.wikipedia.org/wiki/Herd_behavior">herd-like behavior</a>.<br><br>
+
+                            To address this issue, the authors of <a href="http://www.eecs.harvard.edu/~michaelm/postscripts/handbook2001.pdf">The Power of Two Random Choices: A Survey of Techniques and Results"</a><br>
+                            observed that picking hosts randomly would result in better load distribution <code>O(log n)</code> where n is the number of servers.<br><br>
+
+                            Deriving from that fact, they devised a strikingly simple solution that would solve the issue of the traffic fluctuation.<br>
+                            It works by choosing two hosts either via hashing or randomly and then pick the least loaded of the two.<br>
+                            The algorithm gaurantees that the max load of a server is <code>O(log log n)</code>, where <code>n</code> is the number of servers.<br>
                         </p>
+                    </div>
+
+                    <div class="body">
+                        <h1 id="example">Client Example</h1>
+                        <p>An example of the code used by the client to assign requests to servers, using <a href="https://godoc.org/github.com/lafikl/liblb/p2c"><code>liblb/p2c</code> Go package</a>, which implements The Power Of Two Random Choices algorithm.</p>
+                        <pre>
+// Power of Two choices example
+lb := p2c.New("127.0.0.1:8009", "127.0.0.1:8008", "127.0.0.1:8007")
+for i := 0; i < 10; i++ {
+    // uses random power of two choices, because the key length == 0
+    host, err := lb.Balance("")
+    if err != nil {
+        log.Fatal(err)
+    }
+    // load should be ~33% per host
+    fmt.Printf("Send request #%d to host %s\n", i, host)
+    // when the work assigned to the host is done
+    lb.Done(host)
+}
+</pre>
                     </div>
 
                     <div class="body">
@@ -120,27 +169,44 @@
                         </div>
                     </div>
 
-                    <div class="body">
-                        <h1 id="proscons">The Good, the Bad, and the Ugly</h1>
-                        <p>
-                            <h4>Pros:</h4>
-                            <ul>
-                                <li>Perfect load distribution, if all requests take the same time to be served</li>
-                                <li>Very easy to implement</li>
-                                <li>A good starting point when you don't know which algorithm to choose</li>
-                            </ul>
-                            <h4>Cons:</h4>
-                            <ul>
-                                <li>Becuase of it's perfect load distribution - in theory -, it's not suitable for systems that utilizes caches to avoid doing heavy computations over and over.</li>
-                                <li>It assumes that all requests take the same time, and that the servers are homogeneous, which is usually incorrect in practice.</li>
-                            </ul>
-                        </p>
 
+                    <div class="body">
+                        <h1 id="strengths">Strengths</h1>
+                        <ul>
+                            <li>Aware of actual load of the servers, and distributes traffic accordingly.</li>
+                            <li>Very easy to implement in a couple of lines.</li>
+                            <li>Guarantees a server's load to be <code>O(log log n)</code> where <code>n</code> is the number of servers.</li>
+                        </ul>
                     </div>
 
+                    <div class="body">
+                        <h1 id="weaknesses">Weaknesses</h1>
+                        <ul>
+                            <li>The application needs to implement a way to propagate the load informations to the load balancers.</li>
+                            <li>It has no way of assigning certain requests to certain servers (affinity), which makes it not suitable for systems that utilizes caches to avoid doing heavy computations over and over.</li>
+                        </ul>
+                    </div>
 
                     <div class="body">
-                        <h1 id="docs">liblb P2C Balancer API docs</h1>
+                        <h1 id="usecases">Use Cases</h1>
+                        <ul>
+                            <li>Used by <a href="https://research.fb.com/wp-content/uploads/2016/11/scuba-diving-into-data-at-facebook.pdf">Facebook's Scuba</a> system, to distrbute writes to the servers with the most free disk space.</li>
+                            <li>Distributed Load Balancers. Such as <a href="https://aws.amazon.com/elasticloadbalancing/">ELB</a>, <a href="https://www.cloudflare.com/load-balancing/">CloudFlare Load Balancer</a></li>
+                            <li>Client's load balancer in microservices architecture. Such as <a href="https://twitter.github.io/finagle/guide/Clients.html#p2c-least-loaded">Finagle</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="body">
+                        <h1 id="usecases">Further Readings</h1>
+                        <ul>
+                            <li><a href="http://www.eecs.harvard.edu/~michaelm/postscripts/handbook2001.pdf">The Power of Two Random Choices: A Survey of Techniques and Results - Mitzenmacher et al.</a></li>
+                            <li><a href="https://brooker.co.za/blog/2012/01/17/two-random.html">The power of two random choices - Marc's Blog</a></li>
+                            <li><a href="https://danluu.com/2choices-eviction/">Cache eviction: when are randomized algorithms better than LRU? - Dan Luu</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="body">
+                        <h1 id="proscons">liblb P2C Balancer API docs</h1>
                         <a class="btn btn-prim" href="https://godoc.org/github.com/lafikl/liblb/p2c">GoDoc liblb/p2c</a>
 
                     </div>
