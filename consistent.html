@@ -158,13 +158,13 @@
                             To address this issue we use a technique called "Virtual Nodes", a fancy name that means instead of adding a single point of a server in the circle, we add <code>N</code> replicas of it.
                             For example:
                             <pre>
-                                hostname = "mordor"
-                                number_of_replicas = 10
-                                for i = 0; i < number_of_replicas; i++ {
-                                    h = hash(hostname + i)
-                                    circle.add(h)
-                                }
-                            </pre>
+hostname = "mordor"
+number_of_replicas = 10
+for i = 0; i < number_of_replicas; i++ {
+    h = hash(hostname + i)
+    circle.add(h)
+}
+</pre>
 
                         </p>
                     </div>
@@ -189,6 +189,10 @@ for i := 0; i < 10; i++ {
                         <h1 id="experiment">Experiment Results</h1>
                         <div class="text-center">
                             <div class="thumbnail">
+                                <div class="caption">
+                                  <h6>Consistent Hashing's Experiment Results</h6>
+                                  <h6><a href="learn.html#graphs">For info on the graphs</a></h6>
+                                </div>
                                 <a href="img/consistent/1.png" target="_blank">
                                     <img src="img/consistent/1.png" alt="liblb simulation architecture">
                                 </a>
@@ -198,10 +202,7 @@ for i := 0; i < 10; i++ {
                                 <a href="img/consistent/3.png" target="_blank">
                                     <img src="img/consistent/3.png" alt="liblb simulation architecture">
                                 </a>
-                              <div class="caption">
-                                <h6>Consistent Hashing's Experiment Results</h6>
-                                <h6><a href="learn.html#graphs">For info on the graphs</a></h6>
-                              </div>
+
                             </div>
                         </div>
                     </div>
@@ -210,9 +211,9 @@ for i := 0; i < 10; i++ {
                     <div class="body">
                         <h1 id="strengths">Strengths</h1>
                         <ul>
-                            <li>Aware of actual load of the servers, and distributes traffic accordingly.</li>
-                            <li>Very easy to implement in a couple of lines.</li>
-                            <li>Guarantees a server's load to be <code>O(log log n)</code> where <code>n</code> is the number of servers.</li>
+                            <li>Because of its decenteralized nature, nodes don't need to communicate to each other to make a decision on who to assign work to.</li>
+                            <li>Only the list of host is needed to map keys to hosts.</li>
+                            <li>Adding or removing a host changes location of <code>1/number_of_servers</code> of the keys, only.</li>
                         </ul>
                     </div>
 
@@ -229,24 +230,24 @@ for i := 0; i < 10; i++ {
                         <ul>
                             <li>Used by Cassandra, DynamoDB, Riak to shard the keyspace between hosts.</li>
                             <li>Memcached uses it to partition the caches and to route traffic between servers.</li>
-                            <li>Used by <a href="https://research.fb.com/wp-content/uploads/2016/11/scuba-diving-into-data-at-facebook.pdf">Facebook's Scuba</a> system, to distrbute writes to the servers with the most free disk space.</li>
-                            <li>Distributed Load Balancers. Such as <a href="https://aws.amazon.com/elasticloadbalancing/">ELB</a>, <a href="https://www.cloudflare.com/load-balancing/">CloudFlare Load Balancer</a></li>
-                            <li>Client's load balancer in microservices architecture. Such as <a href="https://twitter.github.io/finagle/guide/Clients.html#p2c-least-loaded">Finagle</a></li>
+                            <li>Used by <a href="https://en.wikipedia.org/wiki/Chord_(peer-to-peer)">Chord</a> as a mechanism to locate items in a Distributed Hash Table.</li>
+                            <li>It basically works great for systems that needs affinity between clients and servers, a websocket load balancer for example.</li>
                         </ul>
                     </div>
 
                     <div class="body">
                         <h1 id="usecases">Further Readings</h1>
                         <ul>
-                            <li><a href="http://www.eecs.harvard.edu/~michaelm/postscripts/handbook2001.pdf">The Power of Two Random Choices: A Survey of Techniques and Results - Mitzenmacher et al.</a></li>
-                            <li><a href="https://brooker.co.za/blog/2012/01/17/two-random.html">The power of two random choices - Marc's Blog</a></li>
-                            <li><a href="https://danluu.com/2choices-eviction/">Cache eviction: when are randomized algorithms better than LRU? - Dan Luu</a></li>
+                            <li><a href="http://dl.acm.org/citation.cfm?id=258660">Consistent Hashing and Random Trees: Distributed Caching Protocols for Relieving Hot Spots on the World Wide Web. - Karger et al (1997).</a></li>
+                            <li><a href="https://en.wikipedia.org/wiki/Consistent_hashing">Consistent hashing - Wikipedia</a></li>
+                            <li><a href="http://www.tom-e-white.com/2007/11/consistent-hashing.html">Tom White: Consistent Hashing</a></li>
+                            <li><a href="http://michaelnielsen.org/blog/consistent-hashing/">Consistent hashing | Michael Nielsen</a></li>
                         </ul>
                     </div>
 
                     <div class="body">
-                        <h1 id="proscons">liblb P2C Balancer API docs</h1>
-                        <a class="btn btn-prim" href="https://godoc.org/github.com/lafikl/liblb/p2c">GoDoc liblb/p2c</a>
+                        <h1 id="proscons">liblb Consistent Hashing Balancer API docs</h1>
+                        <a class="btn btn-prim" href="https://godoc.org/github.com/lafikl/liblb/consistent">GoDoc liblb/consistent</a>
 
                     </div>
 
