@@ -73,13 +73,13 @@
                         <li>
                             <a href="r2.html">Round Robin</a>
                         </li>
-                        <li class="active">
+                        <li>
                             <a href="p2c.html">Two Random Choices</a>
                         </li>
                         <!-- <li>
                             <a href="pp2c.html">Partial Key Grouping</a>
                         </li> -->
-                        <li>
+                        <li class="active">
                             <a href="consistent.html">Consistent Hashing</a>
                         </li>
                         <li>
@@ -104,46 +104,83 @@
                     </div>
 
                     <div class="body">
-                        <h1 id="explaination">What is The Power Of Two Random Choices?</h1>
+                        <h1 id="explaination">What is Consistent Hashing?</h1>
                         <p>
-                            In centerlalized load balancers world,
-                            implementing a least loaded policy is very simple. Because it has a complete view of the cluster,
-                            since all the traffic goes through it.<br>
-                            It can do it by keeping counters of open connections for every host, and route traffic to the least loaded one.<br>
-                            But once your systems outgrows that load balancer, this could never work as is.<br><br>
+                            To understand Consistent Hashing you have to look at the use case it was invented for.
+                            In 1997 Akamai had an issue with how to locate a given item in their distributed caching system.<br>
+                            <br>There are two ways to accomplish such thing, the first one is to create a lookup table that contains that maps an item to a given server.<br>
+                            Which is space bound and requires more work to do, also the lookup table will be a bottleneck for sure.<br><br>
+                            Another way to address the issue, is to use a hashing function to map an item to a server.<br>
+                            <code>hash(item_name)%number_of_server</code><br>
+                            Hashing eliminates the need for a lookup table, and its shortcomings.
+                        </p><br>
+                        <h3>So why did they invent Consistent Hashing?</h3>
+                        <p>
 
-                            First, we need a way to periodically propagate the load information of the hosts to all the load balancers.<br>
-                            Once we do so, the load of the servers will look like a roller coaster, moving up and down.<br>
-                            It's because that the load information distrubted will always be stale.<br>
-                            Which means that the load balancers, are going to route more traffic than it should to the least loaded server.<br>
-                            This will happen again, when it gets the new load information with the newest least loaded host.<br>
-                            While the previously least loaded host becomes idle, developing a <a href="https://en.wikipedia.org/wiki/Herd_behavior">herd-like behavior</a>.<br><br>
+                            Well, the issue with modular hashing is that if the number of servers changes, you'll end up needing to move
+                            <code>number_of_servers/number_of_servers+1</code> of the keys to different locations.<br>
+                            For a cluster of 5 servers, you'll need to move 83% of the keys to different servers.<br>
+                            A costly operation, just imagine the amount of wasted bandwidth, and the sudden increase of load on the servers.<br>
+                            In any distributed system, servers come and go very often, and more often now when using the cloud.<br><br>
+                        </p>
+                        <h3>Enter Consistent Hashing</h3>
+                        <p>
+                            To address the volatile nature of modular hashing, Akamai invented Consistent Hashing.<br>
+                            A special kind of hashing that gaurantees that when a server come or go, only <code>1/number_of_servers</code>
+                            needs to change its location, in other words only the items that belong to the added server, gets moved from their current location to the newly added server.<br>
+                            Same goes for deletion, meaning that only the items that belong to the deleted server gets moved.
+                            Everything else stays right where it is.
 
-                            To address this issue, the authors of <a href="http://www.eecs.harvard.edu/~michaelm/postscripts/handbook2001.pdf">The Power of Two Random Choices: A Survey of Techniques and Results"</a><br>
-                            observed that picking hosts randomly would result in better load distribution <code>O(log n)</code> where n is the number of servers.<br><br>
+                            The algorithm works by modeling the keyspace as a circle.
+                            Then we use a hashing function to assign intervals of the circle randomly to each server.
+                            <div class="thumbnail">
+                                <div class="caption">
+                                  <h6>Adding hosts in Consistent Hashing</h6>
+                                </div>
+                                <a href="img/addHosts.png" target="_blank">
+                                    <img style="width:50%" src="img/addHosts.png">
+                                </a>
+                            </div>
 
-                            Deriving from that fact, they devised a strikingly simple solution that would solve the issue of the traffic fluctuation.<br>
-                            It works by choosing two hosts either via hashing or randomly and then pick the least loaded of the two.<br>
-                            The algorithm gaurantees that the max load of a server is <code>O(log log n)</code>, where <code>n</code> is the number of servers.<br>
+                            When we want to know the location of a given key,
+                            we use the same hash function to map it to an interval.
+                            We then walk the circle clock wise, until we find a server.
+                            <div class="thumbnail">
+                                <div class="caption">
+                                  <h6>Assiging keys to hosts</h6>
+                                </div>
+                                <a href="img/addKeys.png" target="_blank">
+                                    <img style="width:60%" src="img/addKeys.png">
+                                </a>
+                            </div>
+
+                            It works as expected, but one issue with the Conisistent Hashing we explained, it can't gaurantee to be distrbuted uniformly between hosts.
+                            To address this issue we use a technique called "Virtual Nodes", a fancy name that means instead of adding a single point of a server in the circle, we add <code>N</code> replicas of it.
+                            For example:
+                            <pre>
+                                hostname = "mordor"
+                                number_of_replicas = 10
+                                for i = 0; i < number_of_replicas; i++ {
+                                    h = hash(hostname + i)
+                                    circle.add(h)
+                                }
+                            </pre>
+
                         </p>
                     </div>
-
+                    <br>
                     <div class="body">
                         <h1 id="example">Client Example</h1>
-                        <p>An example of the code used by the client to assign requests to servers, using <a href="https://godoc.org/github.com/lafikl/liblb/p2c"><code>liblb/p2c</code> Go package</a>, which implements The Power Of Two Random Choices algorithm.</p>
+                        <p>An example of the code used by the client to assign requests to servers, using <a href="https://godoc.org/github.com/lafikl/liblb/consistent"><code>liblb/consistent</code> Go package</a>, which implements the Consistent Hashing algorithm.</p>
                         <pre>
-// Power of Two choices example
-lb := p2c.New("127.0.0.1:8009", "127.0.0.1:8008", "127.0.0.1:8007")
+lb := consistent.New("127.0.0.1:8009", "127.0.0.1:8008", "127.0.0.1:8007")
 for i := 0; i < 10; i++ {
-    // uses random power of two choices, because the key length == 0
-    host, err := lb.Balance("")
+    host, err := lb.Balance("hello, world!")
     if err != nil {
         log.Fatal(err)
     }
-    // load should be ~33% per host
+    // all of the work will be assigned to a single hosts
     fmt.Printf("Send request #%d to host %s\n", i, host)
-    // when the work assigned to the host is done
-    lb.Done(host)
 }
 </pre>
                     </div>
@@ -152,17 +189,17 @@ for i := 0; i < 10; i++ {
                         <h1 id="experiment">Experiment Results</h1>
                         <div class="text-center">
                             <div class="thumbnail">
-                                <a href="img/p2c/1.png" target="_blank">
-                                    <img src="img/p2c/1.png" alt="liblb simulation architecture">
+                                <a href="img/consistent/1.png" target="_blank">
+                                    <img src="img/consistent/1.png" alt="liblb simulation architecture">
                                 </a>
-                                <a href="img/p2c/2.png" target="_blank">
-                                    <img src="img/p2c/2.png" alt="liblb simulation architecture">
+                                <a href="img/consistent/2.png" target="_blank">
+                                    <img src="img/consistent/2.png" alt="liblb simulation architecture">
                                 </a>
-                                <a href="img/p2c/3.png" target="_blank">
-                                    <img src="img/p2c/3.png" alt="liblb simulation architecture">
+                                <a href="img/consistent/3.png" target="_blank">
+                                    <img src="img/consistent/3.png" alt="liblb simulation architecture">
                                 </a>
                               <div class="caption">
-                                <h6>P2C's Experiment Results</h6>
+                                <h6>Consistent Hashing's Experiment Results</h6>
                                 <h6><a href="learn.html#graphs">For info on the graphs</a></h6>
                               </div>
                             </div>
@@ -190,6 +227,8 @@ for i := 0; i < 10; i++ {
                     <div class="body">
                         <h1 id="usecases">Use Cases</h1>
                         <ul>
+                            <li>Used by Cassandra, DynamoDB, Riak to shard the keyspace between hosts.</li>
+                            <li>Memcached uses it to partition the caches and to route traffic between servers.</li>
                             <li>Used by <a href="https://research.fb.com/wp-content/uploads/2016/11/scuba-diving-into-data-at-facebook.pdf">Facebook's Scuba</a> system, to distrbute writes to the servers with the most free disk space.</li>
                             <li>Distributed Load Balancers. Such as <a href="https://aws.amazon.com/elasticloadbalancing/">ELB</a>, <a href="https://www.cloudflare.com/load-balancing/">CloudFlare Load Balancer</a></li>
                             <li>Client's load balancer in microservices architecture. Such as <a href="https://twitter.github.io/finagle/guide/Clients.html#p2c-least-loaded">Finagle</a></li>
