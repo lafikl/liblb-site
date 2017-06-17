@@ -108,7 +108,7 @@
                         <p>
                             To understand Consistent Hashing you have to look at the use case it was invented for.
                             In 1997 Akamai had an issue with how to locate a given item in their distributed caching system.<br>
-                            <br>There are two ways to accomplish such thing, the first one is to create a lookup table that contains that maps an item to a given server.<br>
+                            <br>There are two ways to accomplish such thing, the first one is to create a lookup table that maps an item to a given server.<br>
                             Which is space bound and requires more work to do, also the lookup table will be a bottleneck for sure.<br><br>
                             Another way to address the issue, is to use a hashing function to map an item to a server.<br>
                             <code>hash(item_name)%number_of_server</code><br>
