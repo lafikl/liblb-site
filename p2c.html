@@ -106,25 +106,23 @@
                     <div class="body">
                         <h1 id="explaination">What is The Power Of Two Random Choices?</h1>
                         <p>
-                            In centerlalized load balancers world,
-                            implementing a least loaded policy is very simple. Because it has a complete view of the cluster,
-                            since all the traffic goes through it.<br>
-                            It can do it by keeping counters of open connections for every host, and route traffic to the least loaded one.<br>
-                            But once your systems outgrows that load balancer, this could never work as is.<br><br>
+                            In a centralized load balancing architecture,
+                            implementing a least loaded policy is very simple because it has a complete view of the cluster's traffic.<br>
+                            It can do it by keeping counters of open connections to every host, and route traffic to the least loaded one.<br>
+                            But adding more load balancers to keep up with the traffic growth will complicate matters and new problems will arise.<br><br>
 
-                            First, we need a way to periodically propagate the load information of the hosts to all the load balancers.<br>
-                            Once we do so, the load of the servers will look like a roller coaster, moving up and down.<br>
-                            It's because that the load information distrubted will always be stale.<br>
-                            Which means that the load balancers, are going to route more traffic than it should to the least loaded server.<br>
-                            This will happen again, when it gets the new load information with the newest least loaded host.<br>
-                            While the previously least loaded host becomes idle, developing a <a href="https://en.wikipedia.org/wiki/Herd_behavior">herd-like behavior</a>.<br><br>
+                            To implement a least loaded policy in a distributed load balancing architecture, we need a way to periodically
+                            propagate host load information to all the load balancers. Usually done with a delay to minimize the cost of the load data collection.<br>
+                            Since the load data is always stale, the load of each server will spike up and down like a roller coaster
+                            because multiple load balancers will select the same least loaded host.<br>
+                            This happens again when the load information gets updated and a new least loaded host is selected, while the previously least loaded host becomes busy, developing a <a href="https://en.wikipedia.org/wiki/Herd_behavior">herd-like behavior</a>.<br><br>
 
-                            To address this issue, the authors of <a href="http://www.eecs.harvard.edu/~michaelm/postscripts/handbook2001.pdf">The Power of Two Random Choices: A Survey of Techniques and Results"</a><br>
-                            observed that the load distribution of picking hosts randomly (<code>O(log number_of_servers)</code>) would be better than least loaded in such setup.<br><br>
+                            To solve this issue, the authors of <a href="http://www.eecs.harvard.edu/~michaelm/postscripts/handbook2001.pdf">The Power of Two Random Choices: A Survey of Techniques and Results"</a>
+                            observed that distributing the load by picking hosts randomly (guaranteeing a <code>O(log number_of_servers)</code> load) performs better than least loaded policy in a distributed architecture.<br><br>
 
-                            Deriving from that fact, they devised a strikingly simple solution that would solve the issue of the herd behaviour.<br>
-                            It works by choosing two hosts either via hashing or randomly and then pick the least loaded of the two.<br>
-                            The algorithm gaurantees that the max load of a server is <code>O(log log n)</code>, where <code>n</code> is the number of servers.<br>
+                            Deriving from that fact, they devised a strikingly simple solution that would solve the issue of the herd behavior.<br>
+                            It works by choosing two hosts either via hashing or randomly and then picking the least loaded of the two.<br>
+                            The algorithm gaurantees that the max load of a server is <code>O(log log number_of_servers)</code>.<br>
                         </p>
                     </div>
 
@@ -183,7 +181,7 @@ for i := 0; i < 10; i++ {
                         <h1 id="weaknesses">Weaknesses</h1>
                         <ul>
                             <li>The application needs to implement a way to propagate the load informations to the load balancers.</li>
-                            <li>It has no way of assigning certain requests to certain servers (affinity), which makes it not suitable for systems that utilizes caches to avoid doing heavy computations over and over.</li>
+                            <li>It has no way of assigning certain requests to certain servers (affinity), which makes it not suitable for systems that utilizes caches to minimize heavy computations.</li>
                         </ul>
                     </div>
 
