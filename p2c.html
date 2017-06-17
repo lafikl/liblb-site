@@ -120,9 +120,9 @@
                             While the previously least loaded host becomes idle, developing a <a href="https://en.wikipedia.org/wiki/Herd_behavior">herd-like behavior</a>.<br><br>
 
                             To address this issue, the authors of <a href="http://www.eecs.harvard.edu/~michaelm/postscripts/handbook2001.pdf">The Power of Two Random Choices: A Survey of Techniques and Results"</a><br>
-                            observed that picking hosts randomly would result in better load distribution <code>O(log n)</code> where n is the number of servers.<br><br>
+                            observed that the load distribution of picking hosts randomly (<code>O(log number_of_servers)</code>) would be better than least loaded in such setup.<br><br>
 
-                            Deriving from that fact, they devised a strikingly simple solution that would solve the issue of the traffic fluctuation.<br>
+                            Deriving from that fact, they devised a strikingly simple solution that would solve the issue of the herd behaviour.<br>
                             It works by choosing two hosts either via hashing or randomly and then pick the least loaded of the two.<br>
                             The algorithm gaurantees that the max load of a server is <code>O(log log n)</code>, where <code>n</code> is the number of servers.<br>
                         </p>
