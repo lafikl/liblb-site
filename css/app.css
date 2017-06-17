@@ -204,3 +204,8 @@ ul.no-pads {
     padding-bottom: 10px;
     border-bottom: 2px dotted #ededed;
 }
+
+
+.body li {
+    font-size: 1.2em;
+}
