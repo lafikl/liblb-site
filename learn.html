@@ -93,20 +93,20 @@
                         <h1>Why and What is liblb?</h1>
                         <p>
                             It all started when a friend of mine complained about
-                            how the load balancing algorithm he was using for a system, wasn't delivering the outcomes he was looking for.<br>
-                            His use case was somewhat a unique one, so I got very interested in solving that issue.<br>
-                            Not long after, I found myself researching on all the load balancing algorithms I could find in the literature.<br>
-                            After a while, I decided to build a <a href="#simulation">simulation</a>, to better evaluate the algorithms I chose based on:
+                            how the load balancing algorithm he was using wasn't delivering the outcomes he was expecting.<br>
+                            Because of his somewhat unique use case I was very intrigued, so I decided to help him solve the issue.<br>
+                            Not long after, I found myself researching the literature on all the load balancing algorithms I could find.<br>
+                            After a while, I decided to build a this simulation to better evaluate the algorithms based on:
                         </p>
                         <ul>
-                            <li>Simplicity of the algorithm</li>
-                            <li>Load Distribtuion</li>
-                            <li>Affinty/Cache Friendliness</li>
-                            <li>The Guarantees Provided</li>
+                            <li>Algorithm simplicity</li>
+                            <li>Load distribution</li>
+                            <li>Affinity and cache friendliness</li>
+                            <li>The guarantees provided</li>
                         </ul>
                         <p>
                             Each algorithm serves a particular use case on a different side of the spectrum.<br>
-                            Which should cater for most of the different applications needs, ranging from CDNs, to CRUD applications who keep their state in a centralized database.
+                            Which should cater to most applications, ranging from CDNs to CRUD applications that keep their state in a centralized database.
 
                         </p>
                     </div>
@@ -114,16 +114,15 @@
                     <div class="body">
                         <h1 id="simulation">Simulation</h1>
                         <p>
-                            The simulation is derived from logs of a day worth of real traffic - anonymized of course - donated from a <a href="https://haraj.com">major eCommerce site in the Middle East</a>.<br>
-                            Which in my opinion makes the study more meaningful than a randomly generated traffic.<br><br>
+                            The simulation is derived from a day's worth of anonymized real traffic logs donated from a <a href="https://haraj.com">major eCommerce site</a> in the Middle East, which makes the study more meaningful than a randomly generated traffic.<br><br>
 
                             The simulation works as follows:
                         </p>
                         <ol>
-                            <li><b>Client</b>: extracts the user's IP from the logs</li>
-                            <li><b>Client</b>: sends the IP to the GeoServer host the <i><b>liblb</b></i> gave it (for <a href="https://godoc.org/github.com/lafikl/liblb/r2#ex-package">example</a>), based on the algorithm chosen.</li>
-                            <li><b>GeoServer Host</b>: Looks in its in-memory cache, if found it returns the results from cache, while incrementing the cache hit counter.</li>
-                            <li><b>GeoServer Host</b>: Otherwise, it returns the results from its database, while adding it in the cache, then it increments the cache miss counter.</li>
+                            <li><b>Client</b>: Extracts the user's IP from the logs.</li>
+                            <li><b>Client</b>: Sends the IP to the GeoServer host the <i><b>liblb</b></i> gave it (for <a href="https://godoc.org/github.com/lafikl/liblb/r2#ex-package">example</a>) based on the selected algorithm.</li>
+                            <li><b>GeoServer Host</b>: Looks in its in-memory cache, if found it increments a cache hit counter and return the cached result.</li>
+                            <li><b>GeoServer Host</b>: Otherwise, it increments a cache miss counter and returns the results from its database, while adding it in the cache.</li>
                         </ol>
                         <div class="text-center">
                             <div class="thumbnail">
