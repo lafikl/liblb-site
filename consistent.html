@@ -120,13 +120,13 @@
                             items get assigned to a different server.
                             For example, in a cluster of 5 servers if you add a 6th server then 83% of the items will move to different servers.
                             A costly operation, just imagine the amount of wasted bandwidth and the sudden increase of load on the servers.
-                            In any distributed system, servers come and go very often, especially when using the cloud.
+                            In any distributed system, servers come and go very often, especially when using the cloud.<br><br>
                         </p>
                         <h3>Enter Consistent Hashing</h3>
                         <p>
                             To address the volatile nature of modular hashing, Akamai invented Consistent Hashing,
                             A special kind of hashing that guarantees only <code>1 / (number_of_servers + 1)</code>
-                            of the items move to a new location while everything else stays right where it is.
+                            of the items move to a new location while everything else stays right where it is.<br><br>
 
                             The algorithm works by modeling the keyspace as a circle where the hash function assigns each server to an interval of the circle:
                         </p>
