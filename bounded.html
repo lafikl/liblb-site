@@ -108,21 +108,21 @@
                             you start with a bunch of servers fronted by a load balancer that probably uses Round Robin.
                             Let's say you were immensly lucky and your little service's traffic went over the roof, because Justin Bieber started using your service.
                             So, your service starts to crash because the backend store your servers uses to serve content from, is getting overloaded,
-                            you certainly can't blame the beliebers for it?<br>
+                            you certainly can't blame the beliebers for it?
                             Caching will certainly help reduce the load on the database,
                             so you added a local cache in every server.
                             And to increase the hits you wisely started to use Consistent Hashing as a
                             load balancing algorithm, after all it's what Memcached uses right?
                             But soon after that you saw that while you got better cache hits, the load became skewed, and that there's an increased load on the servers that hosts Justin's site.
                             There's still a way to have the best of both worlds, high cache hits and bounded server load.
-                            <br>This is where <a href="https://research.googleblog.com/2017/04/consistent-hashing-with-bounded-loads.html">Consistent Hashing With Bounded Loads</a> comes into play.
+                            This is where <a href="https://research.googleblog.com/2017/04/consistent-hashing-with-bounded-loads.html">Consistent Hashing With Bounded Loads</a> comes into play.
                         </p>
                         <h3>Consistent Hashing With Bounded Loads Explained</h3>
                         <p>
                           It's a variation of <a href="consistent.html">Consistent Hashing</a>,
                           that gaurantees an upper bound on the maximum load of every single server, relative to the average of the total load of the cluster.
                           The algorithm works the same way as Consistent Hashing, but they differ in in how they pick a server in order to assign work to it.
-                          <br><br>The step goes as follows:
+                          The step goes as follows:
                         </p>
                         <ul>
                           <li>It hashes the given key to find its corresponding range in the ring. Same as <a href="consistent.html">Consistent Hashing</a>.</li>
@@ -166,7 +166,7 @@ def loadOK(hostName string) bool:
                           </li>
                             </ul>
                     </div>
-                    <br>
+
                     <div class="body">
                         <h1 id="example">Client Example</h1>
                         <p>An example of the code used by the client to assign requests to servers, using <a href="https://godoc.org/github.com/lafikl/liblb/consistent"><code>liblb/consistent</code> Go package</a>, which implements the Consistent Hashing algorithm.</p>

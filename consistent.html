@@ -107,9 +107,9 @@
                         <h1 id="explaination">What is Consistent Hashing?</h1>
                         <p>
                             To understand Consistent Hashing you have to look at the use case it was invented for.
-                            In 1997 Akamai had an issue with how to locate a given item in their distributed caching system.<br>
-                            <br>There are two ways to accomplish this, the first one is to create a lookup table that maps an item to its server,
-                            which require storage that grows as more and more items are added to the cache until it eventually becomes a bottleneck in the system.<br>
+                            In 1997 Akamai had an issue with how to locate a given item in their distributed caching system.
+                            There are two ways to accomplish this, the first one is to create a lookup table that maps an item to its server,
+                            which require storage that grows as more and more items are added to the cache until it eventually becomes a bottleneck in the system.
                             The second way to map items to their servers is to use a hashing function on the items and use the modular operator to distribute the hashes across the servers <code>hash(item_name) % number_of_server</code>, eliminating the need for a lookup table, and all its shortcomings.
                         </p>
                         <h3>So why did they invent Consistent Hashing?</h3>
@@ -117,16 +117,16 @@
 
                             Well, the issue with modular hashing arises when the number of servers change, items that belonged to specific
                             servers might move to different servers. Exactly <code>number_of_servers / (number_of_servers + 1)</code> of the
-                            items get assigned to a different server.<br>
-                            For example, in a cluster of 5 servers if you add a 6th server then 83% of the items will move to different servers.<br>
-                            A costly operation, just imagine the amount of wasted bandwidth and the sudden increase of load on the servers.<br>
-                            In any distributed system, servers come and go very often, especially when using the cloud.<br><br>
+                            items get assigned to a different server.
+                            For example, in a cluster of 5 servers if you add a 6th server then 83% of the items will move to different servers.
+                            A costly operation, just imagine the amount of wasted bandwidth and the sudden increase of load on the servers.
+                            In any distributed system, servers come and go very often, especially when using the cloud.
                         </p>
                         <h3>Enter Consistent Hashing</h3>
                         <p>
-                            To address the volatile nature of modular hashing, Akamai invented Consistent Hashing, 
+                            To address the volatile nature of modular hashing, Akamai invented Consistent Hashing,
                             A special kind of hashing that guarantees only <code>1 / (number_of_servers + 1)</code>
-                            of the items move to a new location while everything else stays right where it is.<br><br>
+                            of the items move to a new location while everything else stays right where it is.
 
                             The algorithm works by modeling the keyspace as a circle where the hash function assigns each server to an interval of the circle:
                         </p>
@@ -139,7 +139,7 @@
                           </a>
                         </div>
                         <p>
-                            When we want to know the location of a given item we use the hash function to map it to an interval of the circle 
+                            When we want to know the location of a given item we use the hash function to map it to an interval of the circle
                             and then we walk the circle clockwise until we find a server:
                         </p>
                         <div class="thumbnail">
@@ -165,7 +165,7 @@ for i = 0; i < number_of_replicas; i++ {
 
                         </p>
                     </div>
-                    <br>
+
                     <div class="body">
                         <h1 id="example">Client Example</h1>
                         <p>An example of the code used by the client to assign requests to servers, using <a href="https://godoc.org/github.com/lafikl/liblb/consistent"><code>liblb/consistent</code> Go package</a>, which implements the Consistent Hashing algorithm.</p>
