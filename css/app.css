@@ -209,3 +209,7 @@ ul.no-pads {
 .body li {
     font-size: 1.2em;
 }
+
+.body li li {
+    font-size: 1em;
+}
