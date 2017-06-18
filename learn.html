@@ -56,7 +56,7 @@
                 <div class="row">
                     <div class="col-md-12 ">
                         <div class="tagline">
-                            <h1 class="text-center tagline-head">An Empirical Study Of Load Balancing Algorithms</h1>
+                            <h1 class="text-center tagline-head">An Empirical Study of Load Balancing Algorithms</h1>
                         </div>
                     </div>
                 </div>
@@ -93,18 +93,20 @@
                         <h1>Why and What is liblb?</h1>
                         <p>
                             It all started when a friend of mine complained about
-                            how the load balancing algorithm he was using for a system, wasn't delivering the outcomes he was looking for.<br>
-                            His use case was somewhat a unique one, so I got very interested in solving that issue.<br>
-                            Not long after, I found myself researching on all the load balancing algorithms I could find in the literature.<br>
-                            After a while, I decided to build a <a href="#simulation">simulation</a>, to better evaluate the algorithms I chose based on:
-                            <ul>
-                                <li>Simplicity of the algorithm</li>
-                                <li>Load Distribtuion</li>
-                                <li>Affinty/Cache Friendliness</li>
-                                <li>The Guarantees Provided</li>
-                            </ul>
+                            how the load balancing algorithm he was using wasn't delivering the outcomes he was expecting.<br>
+                            Because of his somewhat unique use case I was very intrigued, so I decided to help him solve the issue.<br>
+                            Not long after, I found myself researching the literature on all the load balancing algorithms I could find.<br>
+                            After a while, I decided to build a this simulation to better evaluate the algorithms based on:
+                        </p>
+                        <ul>
+                            <li>Algorithm simplicity</li>
+                            <li>Load distribution</li>
+                            <li>Affinity and cache friendliness</li>
+                            <li>The guarantees provided</li>
+                        </ul>
+                        <p>
                             Each algorithm serves a particular use case on a different side of the spectrum.<br>
-                            Which should cater for most of the different applications needs, ranging from CDNs, to CRUD applications who keep their state in a centralized database.
+                            Which should cater to most applications, ranging from CDNs to CRUD applications that keep their state in a centralized database.
 
                         </p>
                     </div>
@@ -112,17 +114,16 @@
                     <div class="body">
                         <h1 id="simulation">Simulation</h1>
                         <p>
-                            The simulation is derived from logs of a day worth of real traffic - anonymized of course - donated from a <a href="https://haraj.com">major eCommerce site in the Middle East</a>.<br>
-                            Which in my opinion makes the study more meaningful than a randomly generated traffic.<br><br>
+                            The simulation is derived from a day's worth of anonymized real traffic logs donated from a <a href="https://haraj.com">major eCommerce site</a> in the Middle East, which makes the study more meaningful than a randomly generated traffic.<br><br>
 
                             The simulation works as follows:
-                            <ol>
-                                <li><b>Client</b>: extracts the user's IP from the logs</li>
-                                <li><b>Client</b>: sends the IP to the GeoServer host the <i><b>liblb</b></i> gave it (for <a href="https://godoc.org/github.com/lafikl/liblb/r2#ex-package">example</a>), based on the algorithm chosen.</li>
-                                <li><b>GeoServer Host</b>: Looks in its in-memory cache, if found it returns the results from cache, while incrementing the cache hit counter.</li>
-                                <li><b>GeoServer Host</b>: Otherwise, it returns the results from its database, while adding it in the cache, then it increments the cache miss counter.</li>
-                            </ol>
                         </p>
+                        <ol>
+                            <li><b>Client</b>: Extracts the user's IP from the logs.</li>
+                            <li><b>Client</b>: Sends the IP to the GeoServer host the <i><b>liblb</b></i> gave it (for <a href="https://godoc.org/github.com/lafikl/liblb/r2#ex-package">example</a>) based on the selected algorithm.</li>
+                            <li><b>GeoServer Host</b>: Looks in its in-memory cache, if found it increments a cache hit counter and return the cached result.</li>
+                            <li><b>GeoServer Host</b>: Otherwise, it increments a cache miss counter and returns the results from its database, while adding it in the cache.</li>
+                        </ol>
                         <div class="text-center">
                             <div class="thumbnail">
                               <img src="img/liblbarch.png" alt="liblb simulation architecture">
@@ -134,19 +135,16 @@
                     </div>
                     <div class="body">
                         <h1 id="graphs">Graphs Explanation</h1>
-
-                        <p>
-                            <ul>
-                                <li><b>Request Per Server Per Second</b>: Number of requests processed per GeoServer per second.</li>
-                                <li><b>Load Per Server</b>: Load is the percentage of requests sent to every GeoServer in total.</li>
-                                <li><b>Total Hits/Misses</b>: Total number of GeoServer cache hits and misses.</li>
-                                <li><b>Average Hits/Misses Per Second</b>: Average percentage of the cluster cache hits and misses per second.</li>
-                                <li><b>Total Requests</b>: Total number of sent requests to all GeoServers.</li>
-                                <li><b>Requests Per Server</b>: Average of total sent requests to a single GeoServer.</li>
-                                <li><b>Hits %</b>: Average percentage of the cluster cache hits per second.</li>
-                                <li><b>Misses %</b>: Average percentage of the cluster cache misses per second.</li>
-                            </ul>
-                        </p>
+                        <ul>
+                            <li><b>Request Per Server Per Second</b>: Number of requests processed per GeoServer per second.</li>
+                            <li><b>Load Per Server</b>: Load is the percentage of requests sent to every GeoServer in total.</li>
+                            <li><b>Total Hits/Misses</b>: Total number of GeoServer cache hits and misses.</li>
+                            <li><b>Average Hits/Misses Per Second</b>: Average percentage of the cluster cache hits and misses per second.</li>
+                            <li><b>Total Requests</b>: Total number of sent requests to all GeoServers.</li>
+                            <li><b>Requests Per Server</b>: Average of total sent requests to a single GeoServer.</li>
+                            <li><b>Hits %</b>: Average percentage of the cluster cache hits per second.</li>
+                            <li><b>Misses %</b>: Average percentage of the cluster cache misses per second.</li>
+                        </ul>
                     </div>
                 </div>
             </div>

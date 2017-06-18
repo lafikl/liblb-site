@@ -56,7 +56,7 @@
                 <div class="row">
                     <div class="col-md-12 ">
                         <div class="tagline">
-                            <h1 class="text-center tagline-head">An Empirical Study Of Load Balancing Algorithms</h1>
+                            <h1 class="text-center tagline-head">An Empirical Study of Load Balancing Algorithms</h1>
                         </div>
                     </div>
                 </div>
@@ -119,15 +119,16 @@
                         </p>
                         <h3>Consistent Hashing With Bounded Loads Explained</h3>
                         <p>
-                            It's a variation of <a href="consistent.html">Consistent Hashing</a>,
-                            that gaurantees an upper bound on the maximum load of every single server, relative to the average of the total load of the cluster.
-                            The algorithm works the same way as Consistent Hashing, but they differ in in how they pick a server in order to assign work to it.
-                            <br><br>The step goes as follows:
-                            <ul>
-                                <li>It hashes the given key to find its corresponding range in the ring. Same as <a href="consistent.html">Consistent Hashing</a>.</li>
-                                <li>Then it checks the load of the server it landed on, to see if it's below the max load the server.
-                                    The way used to calculate if a host can handle the current request. in psuedo code is:
-                                    <pre>
+                          It's a variation of <a href="consistent.html">Consistent Hashing</a>,
+                          that gaurantees an upper bound on the maximum load of every single server, relative to the average of the total load of the cluster.
+                          The algorithm works the same way as Consistent Hashing, but they differ in in how they pick a server in order to assign work to it.
+                          <br><br>The step goes as follows:
+                        </p>
+                        <ul>
+                          <li>It hashes the given key to find its corresponding range in the ring. Same as <a href="consistent.html">Consistent Hashing</a>.</li>
+                          <li>Then it checks the load of the server it landed on, to see if it's below the max load the server.
+                            The way used to calculate if a host can handle the current request. in psuedo code is:
+                            <pre>
 // initialize a hash table to keep track of the current load of each server
 loadTable := {"127.0.0.1": 0, "192.0.0.1": 0. "88.0.0.1": 0}
 
@@ -155,16 +156,15 @@ def loadOK(hostName string) bool:
         return true
     else:
         return false
-</pre>
-                                </li>
-                                <li>
-                                    If the server is below the max load then it assigns the request to it, and increment the load of the server and the total load of the cluster.
-                                </li>
-                                <li>
-                                    Otherwise, it starts walking the circle clock-wise, until it finds a server whose load is below the max load.
-                                </li>
+                            </pre>
+                          </li>
+                          <li>
+                            If the server is below the max load then it assigns the request to it, and increment the load of the server and the total load of the cluster.
+                          </li>
+                          <li>
+                            Otherwise, it starts walking the circle clock-wise, until it finds a server whose load is below the max load.
+                          </li>
                             </ul>
-                        </p>
                     </div>
                     <br>
                     <div class="body">
