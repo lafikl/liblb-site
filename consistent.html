@@ -108,53 +108,50 @@
                         <p>
                             To understand Consistent Hashing you have to look at the use case it was invented for.
                             In 1997 Akamai had an issue with how to locate a given item in their distributed caching system.<br>
-                            <br>There are two ways to accomplish such thing, the first one is to create a lookup table that maps an item to a given server.<br>
-                            Which is space bound and requires more work to do, also the lookup table will be a bottleneck for sure.<br><br>
-                            Another way to address the issue, is to use a hashing function to map an item to a server.<br>
-                            <code>hash(item_name)%number_of_server</code><br>
-                            Hashing eliminates the need for a lookup table, and its shortcomings.
-                        </p><br>
+                            <br>There are two ways to accomplish this, the first one is to create a lookup table that maps an item to its server,
+                            which require storage that grows as more and more items are added to the cache until it eventually becomes a bottleneck in the system.<br>
+                            The second way to map items to their servers is to use a hashing function on the items and use the modular operator to distribute the hashes across the servers <code>hash(item_name) % number_of_server</code>, eliminating the need for a lookup table, and all its shortcomings.
+                        </p>
                         <h3>So why did they invent Consistent Hashing?</h3>
                         <p>
 
-                            Well, the issue with modular hashing is that if the number of servers changes, you'll end up needing to move
-                            <code>number_of_servers/number_of_servers+1</code> of the keys to different locations.<br>
-                            For a cluster of 5 servers, you'll need to move 83% of the keys to different servers.<br>
-                            A costly operation, just imagine the amount of wasted bandwidth, and the sudden increase of load on the servers.<br>
-                            In any distributed system, servers come and go very often, and more often now when using the cloud.<br><br>
+                            Well, the issue with modular hashing arises when the number of servers change, items that belonged to specific
+                            servers might move to different servers. Exactly <code>number_of_servers / (number_of_servers + 1)</code> of the
+                            items get assigned to a different server.<br>
+                            For example, in a cluster of 5 servers if you add a 6th server then 83% of the items will move to different servers.<br>
+                            A costly operation, just imagine the amount of wasted bandwidth and the sudden increase of load on the servers.<br>
+                            In any distributed system, servers come and go very often, especially when using the cloud.<br><br>
                         </p>
                         <h3>Enter Consistent Hashing</h3>
                         <p>
-                            To address the volatile nature of modular hashing, Akamai invented Consistent Hashing.<br>
-                            A special kind of hashing that gaurantees that when a server come or go, only <code>1/number_of_servers</code>
-                            needs to change its location, in other words only the items that belong to the added server, gets moved from their current location to the newly added server.<br>
-                            Same goes for deletion, meaning that only the items that belong to the deleted server gets moved.
-                            Everything else stays right where it is.
+                            To address the volatile nature of modular hashing, Akamai invented Consistent Hashing, 
+                            A special kind of hashing that guarantees only <code>1 / (number_of_servers + 1)</code>
+                            of the items move to a new location while everything else stays right where it is.<br><br>
 
-                            The algorithm works by modeling the keyspace as a circle.
-                            Then we use a hashing function to assign intervals of the circle randomly to each server.
-                            <div class="thumbnail">
-                                <div class="caption">
-                                  <h6>Adding hosts in Consistent Hashing</h6>
-                                </div>
-                                <a href="img/addHosts.png" target="_blank">
-                                    <img style="width:50%" src="img/addHosts.png">
-                                </a>
-                            </div>
-
-                            When we want to know the location of a given key,
-                            we use the same hash function to map it to an interval.
-                            We then walk the circle clock wise, until we find a server.
-                            <div class="thumbnail">
-                                <div class="caption">
-                                  <h6>Assiging keys to hosts</h6>
-                                </div>
-                                <a href="img/addKeys.png" target="_blank">
-                                    <img style="width:60%" src="img/addKeys.png">
-                                </a>
-                            </div>
-
-                            It works as expected, but one issue with the Conisistent Hashing we explained, it can't gaurantee to be distrbuted uniformly between hosts.
+                            The algorithm works by modeling the keyspace as a circle where the hash function assigns each server to an interval of the circle:
+                        </p>
+                        <div class="thumbnail">
+                          <div class="caption">
+                            <h6>Adding hosts in Consistent Hashing</h6>
+                          </div>
+                          <a href="img/addHosts.png" target="_blank">
+                            <img style="width:50%" src="img/addHosts.png">
+                          </a>
+                        </div>
+                        <p>
+                            When we want to know the location of a given item we use the hash function to map it to an interval of the circle 
+                            and then we walk the circle clockwise until we find a server:
+                        </p>
+                        <div class="thumbnail">
+                          <div class="caption">
+                            <h6>Assiging items to hosts</h6>
+                          </div>
+                          <a href="img/addKeys.png" target="_blank">
+                            <img style="width:60%" src="img/addKeys.png">
+                          </a>
+                        </div>
+                        <p>
+                            It works as expected, but one issue with the Consistent Hashing is that it can't guarantee the items to be distributed uniformly between hosts.
                             To address this issue we use a technique called "Virtual Nodes", a fancy name that means instead of adding a single point of a server in the circle, we add <code>N</code> replicas of it.
                             For example:
                             <pre>
@@ -212,8 +209,8 @@ for i := 0; i < 10; i++ {
                         <h1 id="strengths">Strengths</h1>
                         <ul>
                             <li>Because of its decenteralized nature, nodes don't need to communicate to each other to make a decision on who to assign work to.</li>
-                            <li>Only the list of host is needed to map keys to hosts.</li>
-                            <li>Adding or removing a host changes location of <code>1/number_of_servers</code> of the keys, only.</li>
+                            <li>Only the list of host is needed to map items to hosts.</li>
+                            <li>Adding or removing a host changes location of only <code>1 / number_of_servers</code> of the items.</li>
                         </ul>
                     </div>
 
@@ -221,7 +218,7 @@ for i := 0; i < 10; i++ {
                         <h1 id="weaknesses">Weaknesses</h1>
                         <ul>
                             <li>The application needs to implement a way to propagate the load informations to the load balancers.</li>
-                            <li>It has no way of assigning certain requests to certain servers (affinity), which makes it not suitable for systems that utilizes caches to avoid doing heavy computations over and over.</li>
+                            <li>It has no way of assigning certain requests to certain servers (affinity), which makes it not suitable for systems that utilizes caches to minimize heavy computations.</li>
                         </ul>
                     </div>
 
