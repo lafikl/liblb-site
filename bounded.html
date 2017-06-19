@@ -104,31 +104,39 @@
                     <div class="body">
                         <h1 id="explaination">What and Why?</h1>
                         <p>
-                            Imagine building a service for hosting static websites hosting,
+                            Imagine building a service for hosting static websites,
                             you start with a bunch of servers fronted by a load balancer that probably uses Round Robin.
-                            Let's say you were immensly lucky and your little service's traffic went over the roof, because Justin Bieber started using your service.
-                            So, your service starts to crash because the backend store your servers uses to serve content from, is getting overloaded,
-                            you certainly can't blame the beliebers for it?
-                            Caching will certainly help reduce the load on the database,
-                            so you added a local cache in every server.
-                            And to increase the hits you wisely started to use Consistent Hashing as a
-                            load balancing algorithm, after all it's what Memcached uses right?
-                            But soon after that you saw that while you got better cache hits, the load became skewed, and that there's an increased load on the servers that hosts Justin's site.
+                            Let's say you were immensely lucky and your little service's traffic went over the roof because Justin Bieber started using your service.
+                            So, your service starts crashing because the backend store your servers uses is getting overloaded,
+                            you certainly can't blame the Beliebers for it, can you?<br><br>
+                            You start adding a local cache in every server to help reduce the load on the database.
+                            And to maximize the cache hits you wisely use Consistent Hashing as the
+                            load balancing algorithm. After all, it's what Memcached uses right?
+                            But soon after that you see that while you have high cache hits the traffic still overloads the servers, especially the servers that hosts Justin's site.<br><br>
                             There's still a way to have the best of both worlds, high cache hits and bounded server load.
                             This is where <a href="https://research.googleblog.com/2017/04/consistent-hashing-with-bounded-loads.html">Consistent Hashing With Bounded Loads</a> comes into play.
                         </p>
                         <h3>Consistent Hashing With Bounded Loads Explained</h3>
                         <p>
-                          It's a variation of <a href="consistent.html">Consistent Hashing</a>,
-                          that gaurantees an upper bound on the maximum load of every single server, relative to the average of the total load of the cluster.
-                          The algorithm works the same way as Consistent Hashing, but they differ in in how they pick a server in order to assign work to it.
+                          It's a variation of <a href="consistent.html">Consistent Hashing</a>
+                          that gaurantees an upper bound on the maximum load of every server relative to the average total load of the cluster.
+                          The algorithm works the same way as Consistent Hashing but differs in how it selects a server in order to assign work to it.
                           <br><br>The step goes as follows:
                         </p>
-                        <ul>
-                          <li>It hashes the given key to find its corresponding range in the ring. Same as <a href="consistent.html">Consistent Hashing</a>.</li>
-                          <li>Then it checks the load of the server it landed on, to see if it's below the max load the server.
-                            The way used to calculate if a host can handle the current request. in psuedo code is:
-                            <pre>
+                        <ol>
+                          <li>Hash the given item to its corresponding interval in the circle, same as <a href="consistent.html">Consistent Hashing</a>.</li>
+                          <li>Check the load of the selected server to see if it's below the maximum allowed load.
+                          </li>
+                          <li>
+                            If the server is below the maximum load then assign the request to it and increment both the load of the server and the total load of the cluster.
+                          </li>
+                          <li>
+                            Otherwise, start walking the circle clockwise until we find a server whose load is below the maximum load.
+                          </li>
+                        </ol>
+                        <p>
+                          In psuedo code:
+                          <pre>
 // initialize a hash table to keep track of the current load of each server
 loadTable := {"127.0.0.1": 0, "192.0.0.1": 0. "88.0.0.1": 0}
 
@@ -156,15 +164,8 @@ def loadOK(hostName string) bool:
         return true
     else:
         return false
-                            </pre>
-                          </li>
-                          <li>
-                            If the server is below the max load then it assigns the request to it, and increment the load of the server and the total load of the cluster.
-                          </li>
-                          <li>
-                            Otherwise, it starts walking the circle clock-wise, until it finds a server whose load is below the max load.
-                          </li>
-                            </ul>
+                          </pre>
+                        </p>
                     </div>
 
                     <div class="body">
@@ -179,7 +180,7 @@ for i := 0; i < 10; i++ {
     }
     lb.Inc(host)
     // a host will get an upper load of ceil(((total_load/number_of_server)+1)*scale_factor)
-    // which is ceil(((10/3)+1)*1.25) = 6
+    // which, for this example, is ceil(((10/3)+1)*1.25) = 6
     fmt.Printf("Send request #%d to host %s\n", i, host)
     lb.Done(host)
 }
@@ -213,14 +214,14 @@ for i := 0; i < 10; i++ {
                         <h1 id="strengths">Strengths</h1>
                         <ul>
                             <li>When servers are not overloaded it works the same as <a href="bounded.html">Consistent Hashing</a>, which means it'll keep the same key work to the same server until it gets overloaded.</li>
-                            <li>Adding or removing a host changes location of <code>1/(e^2)</code> where <code>e</code> is <code>scale_factor-1</code> - in our case <code>scale_factor</code> is 1.25 and <code>e</code> is .25 - of the keys, only.</li>
+                            <li>Adding or removing a host changes location of <code>1/(e^2)</code> of the keys, where <code>e</code> is <code>scale_factor-1</code>. In our example <code>scale_factor</code> is 1.25 so the percentage of keys that change location is <code>1/(0.25^2)</code> resulting in 16% of the keys.</li>
                         </ul>
                     </div>
 
                     <div class="body">
                         <h1 id="weaknesses">Weaknesses</h1>
                         <ul>
-                            <li>When servers are overloaded, it tradeoffs choice consistensy to acheive better load distribution. Making it not suitable for services that needs to pick the same host at all times.</li>
+                            <li>When servers are overloaded, it prioritize load over host consistency to achieve better load distribution. Making it not suitable for services that need to pick the same host at all times.</li>
                         </ul>
                     </div>
 
