@@ -116,7 +116,7 @@
                         <p>
 
                             Well, the issue with modular hashing arises when the number of servers change, items that belonged to specific
-                            servers might move to different servers. Exactly <code>number_of_servers / (number_of_servers + 1)</code> of the
+                            servers might move to different servers. Exactly <code>number_of_servers/(number_of_servers+1)</code> of the
                             items get assigned to a different server.
                             For example, in a cluster of 5 servers if you add a 6th server then 83% of the items will move to different servers.
                             A costly operation, just imagine the amount of wasted bandwidth and the sudden increase of load on the servers.
@@ -125,7 +125,7 @@
                         <h3>Enter Consistent Hashing</h3>
                         <p>
                             To address the volatile nature of modular hashing, Akamai invented Consistent Hashing,
-                            A special kind of hashing that guarantees only <code>1 / (number_of_servers + 1)</code>
+                            A special kind of hashing that guarantees only <code>1/(number_of_servers+1)</code>
                             of the items move to a new location while everything else stays right where it is.<br><br>
 
                             The algorithm works by modeling the keyspace as a circle where the hash function assigns each server to an interval of the circle:
