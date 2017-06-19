@@ -112,17 +112,68 @@
                     </div>
 
                     <div class="body">
+                        <h1 id="comparison">Comparison</h1>
+                        <table class="table table-bordered">
+                            <thead>
+                                <th>Algorithm</th>
+                                <th>Load Distribution</th>
+                                <th>Cache Friendliness</th>
+                                <th>Gaurantees</th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><a href="r2.html">Round-Robin</a></td>
+                                    <td>Uniform load distribution, if the requests take the same time.</td>
+                                    <td>Not friendly, because it assigns work to hosts randomly.</td>
+                                    <td>All hosts will get the same number of requests.</td>
+                                </tr>
+
+                                <tr>
+                                    <td><a href="p2c.html">Two Random Choices</a></td>
+                                    <td>Max load of any server is <code>O(log log number_of_servers)</code>.</td>
+                                    <td>Not friendly, because it assigns work to hosts randomly.</td>
+                                    <td>Host's max load will be <code>O(log log number_of_servers)</code>, with high probability.</td>
+                                </tr>
+
+                                <tr>
+                                    <td><a href="consistent.html">Consistent Hashing</a></td>
+                                    <td>Load distribution is skewed, due to the random slicing of the ring.</td>
+                                    <td>Very friendly, because it'll always assing the same key to the same host, unless the topolgy changes.</td>
+                                    <td>When the topology changes, only <code>1/number_of_server</code> will be assigned to different hosts.</td>
+                                </tr>
+
+                                <tr>
+                                    <td><a href="bounded.html">Bounded Consistent Hashing</a></td>
+                                    <td>Max Load of a host will never exceed <br><code>ceil(averge_load*scale_factor)</code>.</td>
+                                    <td>Very Friendly, unless a host load reaches its max, then it'll distribute requests coming to it to other hosts.</td>
+                                    <td>Adding or removing a host changes location of <code>1/(e^2)</code> where <code>e</code> is <code>scale_factor-1</code> - <code>e</code> in our case is 0.25-.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p>
+
+                        </p>
+                    </div>
+
+                    <div class="body">
                         <h1 id="simulation">Simulation</h1>
                         <p>
-                            The simulation is derived from a day's worth of anonymized real traffic logs donated from a <a href="https://haraj.com">major eCommerce site</a> in the Middle East, which makes the study more meaningful than a randomly generated traffic.<br><br>
-
-                            The simulation works as follows:
+                            The simulation is derived from a day's worth of anonymized real traffic logs donated from a <a href="https://haraj.com">major Online Classifieds site</a> in the Middle East, which makes the study more meaningful than a randomly generated traffic.<br><br>
+                            before explaining the simulation let's talk about its Components:
+                            <ul>
+                                <li><b>Client</b>: a user that asks for the country of a certain IP. It sends the request to one of the GeoServer hosts given to it by consulting <a href="github.com/lafikl/liblb">liblb</a></li>
+                                <li><b>GeoServer Host</b>: responds the incoming queries by returning the country of the given IP either from its local Cache if found, or directly from the database.</li>
+                            </ul>
+                            <br>
+                        </p>
+                        <p>
+                            Now that we got this out of the way, let's see how the simulation works:
                         </p>
                         <ol>
                             <li><b>Client</b>: Extracts the user's IP from the logs.</li>
                             <li><b>Client</b>: Sends the IP to the GeoServer host the <i><b>liblb</b></i> gave it (for <a href="https://godoc.org/github.com/lafikl/liblb/r2#ex-package">example</a>) based on the selected algorithm.</li>
                             <li><b>GeoServer Host</b>: Looks in its in-memory cache, if found it increments a cache hit counter and return the cached result.</li>
-                            <li><b>GeoServer Host</b>: Otherwise, it increments a cache miss counter and returns the results from its database, while adding it in the cache.</li>
+                            <li><b>GeoServer Host</b>: If the IP is not found in the cache, the GeoServer Host increments a cache miss counter and returns the results from its database, while adding it in the cache.</li>
                         </ol>
                         <div class="text-center">
                             <div class="thumbnail">
@@ -135,6 +186,10 @@
                     </div>
                     <div class="body">
                         <h1 id="graphs">Graphs Explanation</h1>
+                        <div class="screenshot">
+                            <img src="img/p2c-mid.png">
+                        </div>
+                        <br>
                         <ul>
                             <li><b>Request Per Server Per Second</b>: Number of requests processed per GeoServer per second.</li>
                             <li><b>Load Per Server</b>: Load is the percentage of requests sent to every GeoServer in total.</li>

@@ -213,3 +213,12 @@ ul.no-pads {
 .body li li {
     font-size: 1em;
 }
+
+.nav>li.disabled>a {
+    font-size: 12px;
+    margin-top: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px dotted #ededed;
+    color: #666;
+    font-weight: bold;
+}

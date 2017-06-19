@@ -210,15 +210,14 @@ for i := 0; i < 10; i++ {
                         <ul>
                             <li>Because of its decenteralized nature, nodes don't need to communicate to each other to make a decision on who to assign work to.</li>
                             <li>Only the list of host is needed to map items to hosts.</li>
-                            <li>Adding or removing a host changes location of only <code>1 / number_of_servers</code> of the items.</li>
+                            <li>Adding or removing a host changes the location of <code>1 / number_of_servers</code> of the items, which you need to move to their new locations/hosts.</li>
                         </ul>
                     </div>
 
                     <div class="body">
                         <h1 id="weaknesses">Weaknesses</h1>
                         <ul>
-                            <li>The application needs to implement a way to propagate the load informations to the load balancers.</li>
-                            <li>It provides no gaurantees over the max load of a host.</li>
+                            <li>It provides no bounds over the max load of a host.</li>
                         </ul>
                     </div>
 
@@ -227,7 +226,7 @@ for i := 0; i < 10; i++ {
                         <ul>
                             <li>Used by Cassandra, DynamoDB, Riak to shard the keyspace between hosts.</li>
                             <li>Memcached uses it to partition the caches and to route traffic between servers.</li>
-                            <li>Used by <a href="https://en.wikipedia.org/wiki/Chord_(peer-to-peer)">Chord</a> as a mechanism to locate items in a Distributed Hash Table.</li>
+                            <li>Used by <a href="https://en.wikipedia.org/wiki/Chord_(peer-to-peer)">Chord</a> as a mechanism to locate items in a <a href="https://en.wikipedia.org/wiki/Distributed_hash_table">Distributed Hash Table</a>.</li>
                             <li>It basically works great for systems that needs affinity between clients and servers, a websocket load balancer for example.</li>
                         </ul>
                     </div>
