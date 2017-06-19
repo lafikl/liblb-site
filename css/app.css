@@ -222,3 +222,12 @@ ul.no-pads {
     color: #666;
     font-weight: bold;
 }
+
+
+
+@media (max-width: 700px) {
+    .header {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
