@@ -124,7 +124,7 @@
 
                             Deriving from that fact, they devised a strikingly simple solution that would solve the issue of the herd behavior.
                             It works by choosing two hosts either via hashing or randomly and then picking the least loaded of the two.
-                            The algorithm gaurantees that the max load of a server is <code>O(log log number_of_servers)</code>.
+                            The algorithm guarantees that the max load of a server is <code>O(log log number_of_servers)</code>.
                         </p>
                     </div>
 
@@ -182,7 +182,7 @@ for i := 0; i < 10; i++ {
                     <div class="body">
                         <h1 id="weaknesses">Weaknesses</h1>
                         <ul>
-                            <li>The application needs to implement a way to propagate the load informations to the load balancers.</li>
+                            <li>The application needs to implement a way to propagate the load information to the load balancers.</li>
                             <li>It has no way of assigning certain requests to certain servers (affinity), which makes it not suitable for systems that utilizes caches to minimize heavy computations.</li>
                         </ul>
                     </div>
@@ -190,7 +190,7 @@ for i := 0; i < 10; i++ {
                     <div class="body">
                         <h1 id="usecases">Use Cases</h1>
                         <ul>
-                            <li>Used by <a href="https://research.fb.com/wp-content/uploads/2016/11/scuba-diving-into-data-at-facebook.pdf">Facebook's Scuba</a> system, to distrbute writes to the servers with the most free disk space.</li>
+                            <li>Used by <a href="https://research.fb.com/wp-content/uploads/2016/11/scuba-diving-into-data-at-facebook.pdf">Facebook's Scuba</a> system, to distribute writes to the servers with the most free disk space.</li>
                             <li>Distributed Load Balancers. Such as <a href="https://aws.amazon.com/elasticloadbalancing/">ELB</a>, <a href="https://www.cloudflare.com/load-balancing/">CloudFlare Load Balancer</a></li>
                             <li>Client's load balancer in microservices architecture. Such as <a href="https://twitter.github.io/finagle/guide/Clients.html#p2c-least-loaded">Finagle</a></li>
                         </ul>
