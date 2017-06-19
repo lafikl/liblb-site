@@ -119,7 +119,7 @@
                         <h3>Consistent Hashing With Bounded Loads Explained</h3>
                         <p>
                           It's a variation of <a href="consistent.html">Consistent Hashing</a>
-                          that gaurantees an upper bound on the maximum load of every server relative to the average total load of the cluster.
+                          that guarantees an upper bound on the maximum load of every server relative to the average total load of the cluster.
                           The algorithm works the same way as Consistent Hashing but differs in how it selects a server in order to assign work to it.
                           <br><br>The step goes as follows:
                         </p>
@@ -135,7 +135,7 @@
                           </li>
                         </ol>
                         <p>
-                          In psuedo code:
+                          In pseudo code:
                           <pre>
 // initialize a hash table to keep track of the current load of each server
 loadTable := {"127.0.0.1": 0, "192.0.0.1": 0. "88.0.0.1": 0}
