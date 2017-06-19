@@ -108,7 +108,7 @@
                         <p>
                             Imagine building a service for hosting static websites,
                             you start with a bunch of servers fronted by a load balancer that probably uses Round Robin.
-                            Let's say you were immensly lucky and your little service's traffic went over the roof, because Justin Bieber started using your service.
+                            Let's say you were immensely lucky and your little service's traffic went over the roof, because Justin Bieber started using your service.
                             So, your service starts to crash because the backend store your servers uses to serve content from, is getting overloaded,
                             you certainly can't blame the beliebers for it?
                             Caching will certainly help reduce the load on the database,
@@ -122,7 +122,7 @@
                         <h3>Consistent Hashing With Bounded Loads Explained</h3>
                         <p>
                           It's a variation of <a href="consistent.html">Consistent Hashing</a>
-                          that gaurantees an upper bound on the maximum load of every server (<code>ceil((total_load/number_of_server)*scale_factor)</code>) relative to the average total load of the cluster.
+                          that guarantees an upper bound on the maximum load of every server (<code>ceil((total_load/number_of_server)*scale_factor)</code>) relative to the average total load of the cluster.
                           The algorithm works the same way as Consistent Hashing but differs in how it selects a server in order to assign work to it.
                           <br><br>The step goes as follows:
                         </p>
@@ -139,7 +139,7 @@
                           </li>
                         </ul>
                         <p>
-                            In psuedo code:
+                            In pseudo code:
                             <pre>
 // initialize a hash table to keep track of the current load of each server
 loadTable := {"127.0.0.1": 0, "192.0.0.1": 0. "88.0.0.1": 0}
@@ -232,7 +232,7 @@ for i := 0; i < 10; i++ {
                     <div class="body">
                         <h1 id="usecases">Use Cases</h1>
                         <ul>
-                            <li>Google are using it for their <a href="https://research.googleblog.com/2017/04/consistent-hashing-with-bounded-loads.html">Google Cloude Pub/Sub service</a>.</li>
+                            <li>Google are using it for their <a href="https://research.googleblog.com/2017/04/consistent-hashing-with-bounded-loads.html">Google Cloud Pub/Sub service</a>.</li>
                             <li><a href="https://medium.com/vimeo-engineering-blog/improving-load-balancing-with-a-new-consistent-hashing-algorithm-9f1bd75709ed">
                                 Vimeo's SkyFire</a></li>
                             <li>Works very well for caching systems, such as:
